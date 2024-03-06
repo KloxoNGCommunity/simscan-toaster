@@ -12,7 +12,7 @@ BuildRequires:	automake, autoconf
 
 %define	debug_package %{nil}
 %define	vtoaster %{pversion}
-%define	builddate Fri Jun 12 2009
+%define	builddate Fri Sep 18 2020
 
 
 
@@ -39,18 +39,18 @@ BuildRoot:	%{_tmppath}/%{name}-%{pversion}-root
 #BuildPreReq:		qmail-toaster >= 1.03-1.2.4, ripmime-toaster
 BuildRequires:	qmail-toaster >= 1.03-1.2.4, ripmime
 BuildRequires:	mysql-devel, mysql-libs, clamav, ripmime, clamd, spamassassin-toaster 
-#Requires:	qmail-toaster >= 1.03-1.2.4, clamav-toaster, ripmime-toaster
-#Requires:	qmail-toaster >= 1.03-1.2.4, clamav, ripmime, clamd
-Requires:	qmail-toaster >= 1.03-1.2.4, clamav, ripmime, clamd, spamassassin-toaster 
+BuildRequires:  make
+BuildRequires:	gcc
+BuildRequires: gcc-c++
+Requires:	qmail-toaster >= 1.03-1.2.4
 
 %if %{?fedora}0 > 160 || %{?rhel}0 > 70
 BuildRequires: clamav-server, clamav-data, clamav-update, clamav-filesystem, clamav, clamav-scanner-systemd, clamav-devel, clamav-lib, clamav-server-systemd
-Requires: clamav-server, clamav-data, clamav-update, clamav-filesystem, clamav, clamav-scanner-systemd, clamav-devel, clamav-lib, clamav-server-systemd
+
 %else
 %if %{?fedora}0 > 150 || %{?rhel}0 > 60
 BuildRequires:  clamav-data, clamav-update, clamav-filesystem, clamav, clamav-scanner-systemd, clamav-devel, clamav-lib, clamav-server-systemd
-Requires:  clamav-data, clamav-update, clamav-filesystem, clamav, clamav-scanner-systemd, clamav-devel, clamav-lib, clamav-server-systemd
-%endif
+
 %endif
 
 Obsoletes:	clamav-toaster, ripmime-toaster
@@ -89,7 +89,7 @@ reject spam mail.
      control directory     = /var/qmail/control
      qmail queue program   = /var/qmail/bin/qmail-queue
      clamdscan program     = /usr/bin/clamdscan
-     clamav scan           = ON
+     clamav scan           = OFF
      trophie scanning      = OFF
      attachement scan      = ON
      ripmime program       = /usr/bin/ripmime
@@ -109,7 +109,7 @@ reject spam mail.
 
                 Current simcontrol config
      ----------------------------------------------------------
-     :clam=yes,spam=yes,spam_hits=12,attach=.mp3:.src:.bat:.pif
+     :clam=no,spam=yes,spam_hits=12,attach=.mp3:.src:.bat:.pif
      
      
 #-------------------------------------------------------------------------------
@@ -131,10 +131,10 @@ echo "gcc" > %{_tmppath}/%{name}-%{pversion}-gcc
 #-------------------------------------------------------------------------------
 %build
 #-------------------------------------------------------------------------------
-%{__aclocal}
-%{__autoconf}
-autoreconf --install
-%{__automake} --add-missing
+#%%{__aclocal}
+#%%{__autoconf}
+autoreconf -f -i
+#%%{__automake} --add-missing
 
 #we need to set these flags for centos 8 to compile properly
 %if %{?fedora}0 > 150 || %{?rhel}0 > 70
@@ -223,13 +223,14 @@ install -m644 $RPM_BUILD_DIR/%{name}-%{pversion}/$i %{buildroot}%{_datadir}/doc/
 done
 
 pushd %{buildroot}%{qdir}/control
-  echo ":clam=yes,spam=yes,spam_hits=12,attach=.mp3:.src:.bat:.pif" > simcontrol
+  echo ":clam=no,spam=yes,spam_hits=12,attach=.mp3:.src:.bat:.pif" > simcontrol
 popd
 
 #-------------------------------------------------------------------------------
 %post
 #-------------------------------------------------------------------------------
 
+# updates simscan's database of virus scanner versions
 ./%{qdir}/bin/update-%{name}
 
 # We should not overwrite an exisiting tcp.smtp file in case it has custom items in it
@@ -306,6 +307,10 @@ fi
 #-------------------------------------------------------------------------------
 %changelog
 #-------------------------------------------------------------------------------
+
+* Fri Sep 18 2020 John Pierce <john@luckytanuki.com>  1.4.0-1.4.11.kng
+- set no 'requires' for clamav, clamd and ripmime (need manual install)
+
 * Tue Feb 04 2020 Dionysis Kladis <dkstiler@gmail.com> 1.4.0-1.4.11.kng
 - Fix Compile errors with centos 8 by adding different gcc flags 
 - Build for centos 8 on copr with bootstrap option enabled
