@@ -46,11 +46,10 @@ Requires:	qmail-toaster >= 1.03-1.2.4
 
 %if %{?fedora}0 > 160 || %{?rhel}0 > 70
 BuildRequires: clamav-server, clamav-data, clamav-update, clamav-filesystem, clamav, clamav-scanner-systemd, clamav-devel, clamav-lib, clamav-server-systemd
-
 %else
 %if %{?fedora}0 > 150 || %{?rhel}0 > 60
 BuildRequires:  clamav-data, clamav-update, clamav-filesystem, clamav, clamav-scanner-systemd, clamav-devel, clamav-lib, clamav-server-systemd
-
+%endif
 %endif
 
 Obsoletes:	clamav-toaster, ripmime-toaster
