@@ -1,7 +1,7 @@
 %define	name simscan
 %define	pversion 1.4.1
 %define 	bversion 1.4
-%define	rpmrelease 11.kng%{?dist}
+%define	rpmrelease 12.kng%{?dist}
 
 %define		release %{bversion}.%{rpmrelease}
 BuildRequires:	automake, autoconf
@@ -38,7 +38,7 @@ Patch2: 	simscan-kloxong.patch
 BuildRoot:	%{_tmppath}/%{name}-%{pversion}-root
 #BuildPreReq:		qmail-toaster >= 1.03-1.2.4, ripmime-toaster
 BuildRequires:	qmail-toaster >= 1.03-1.2.4, ripmime
-BuildRequires:	mysql-devel, mysql-libs, clamav, ripmime, clamd, spamassassin-toaster 
+BuildRequires:	mariadb-devel, clamav, ripmime, clamd, spamassassin-toaster 
 BuildRequires:  make
 BuildRequires:	gcc
 BuildRequires: gcc-c++
